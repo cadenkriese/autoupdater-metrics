@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import Response, request
 
-from database.models import Plugin, SpigotPlugin, PluginUpdate, PluginUpdateVersion
+from metrics.database.models import Plugin, SpigotPlugin, PluginUpdate, PluginUpdateVersion
 from flask_restful import Resource
 
 
@@ -56,7 +56,7 @@ class UpdatesAPI(Resource):
 
 
 class TestAPI(Resource):
-    def post(self):
+    def post(self,):
         SpigotPlugin(name="Thirst",
                      spigot_name="Thirst",
                      category="Mechanics",

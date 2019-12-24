@@ -1,5 +1,7 @@
-from datetime import datetime
+import datetime
+import jwt
 
+from metrics.core import app
 from .db import db
 
 
@@ -10,7 +12,7 @@ class PluginUpdateVersion(db.EmbeddedDocument):
 
 class PluginUpdate(db.EmbeddedDocument):
     server_id = db.UUIDField(required=True)
-    timestamp = db.DateTimeField(default=datetime.utcnow)
+    timestamp = db.DateTimeField(default=datetime.datetime.utcnow)
     size = db.IntField(required=True)
     update_duration = db.DecimalField(required=True)
     version = db.EmbeddedDocumentField(PluginUpdateVersion, required=True)
@@ -22,6 +24,22 @@ class Plugin(db.Document):
     download_url = db.URLField()
     updates = db.EmbeddedDocumentListField(PluginUpdate)
     meta = {'allow_inheritance': True}
+
+    @staticmethod
+    def encode_auth_token(server_ip):
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': server_ip
+            }
+            return jwt.encode(
+                payload,
+                app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
 
 
 class SpigotPlugin(Plugin):
