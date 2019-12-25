@@ -1,46 +1,45 @@
-import unittest
+# tests/test_config.py
+import pytest
+from flask import Flask
 
-from flask_testing import TestCase
-from flask import current_app
-
-from metrics.core import app
-
-
-class TestDevelopmentConfig(TestCase):
-    def create_app(self):
-        app.config.from_object('metrics.utils.config.DevelopmentConfig')
-        return app
-
-    def test_app_is_development(self):
-        self.assertFalse(app.config['SECRET_KEY'] is 'my_precious')
-        self.assertTrue(app.config['DEBUG'] is True)
-        self.assertFalse(current_app is None)
-        self.assertTrue(
-            app.config['MONGODB_HOST'] == 'mongodb://localhost/autoupdaterapi_test'
-        )
+generic_app = Flask(__name__)
 
 
-class TestTestingConfig(TestCase):
-    def create_app(self):
-        app.config.from_object('metrics.utils.config.TestingConfig')
-        return app
-
-    def test_app_is_testing(self):
-        self.assertFalse(app.config['SECRET_KEY'] is 'my_precious')
-        self.assertTrue(app.config['DEBUG'])
-        self.assertTrue(
-            app.config['MONGODB_HOST'] == 'mongodb://localhost/autoupdaterapi_test'
-        )
+@pytest.fixture
+def setup_dev():
+    generic_app.config.from_object('metrics.utils.config.DevelopmentConfig')
+    return generic_app
 
 
-class TestProductionConfig(TestCase):
-    def create_app(self):
-        app.config.from_object('metrics.utils.config.ProductionConfig')
-        return app
-
-    def test_app_is_production(self):
-        self.assertTrue(app.config['DEBUG'] is False)
+def test_app_is_development(setup_dev):
+    app = setup_dev
+    assert app.config['SECRET_KEY'] is not None
+    assert app.config['DEBUG'] is True
+    assert app.config['MONGODB_HOST'] == 'mongodb://localhost/autoupdaterapi'
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.fixture
+def setup_testing():
+    generic_app.config.from_object('metrics.utils.config.TestingConfig')
+    return generic_app
+
+
+def test_app_is_testing(setup_testing):
+    app = setup_testing
+    assert app.config['SECRET_KEY'] is not None
+    assert app.config['DEBUG'] is True
+    assert app.config['TESTING'] is True
+    assert app.config['MONGODB_HOST'] == 'mongodb://localhost/autoupdaterapi_test'
+
+
+@pytest.fixture
+def setup_production():
+    generic_app.config.from_object('metrics.utils.config.ProductionConfig')
+    return generic_app
+
+
+def test_app_is_production(setup_production):
+    app = setup_production
+    assert app.config['SECRET_KEY'] is not None
+    assert app.config['DEBUG'] is False
+    assert app.config['MONGODB_HOST'] == 'mongodb://localhost/autoupdaterapi'

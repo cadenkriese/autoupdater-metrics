@@ -1,7 +1,6 @@
+# metrics/database/models.py
 import datetime
-import jwt
 
-from metrics.core import app
 from .db import db
 
 
@@ -25,21 +24,21 @@ class Plugin(db.Document):
     updates = db.EmbeddedDocumentListField(PluginUpdate)
     meta = {'allow_inheritance': True}
 
-    @staticmethod
-    def encode_auth_token(server_ip):
-        try:
-            payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
-                'iat': datetime.datetime.utcnow(),
-                'sub': server_ip
-            }
-            return jwt.encode(
-                payload,
-                app.config.get('SECRET_KEY'),
-                algorithm='HS256'
-            )
-        except Exception as e:
-            return e
+    # @staticmethod
+    # def encode_auth_token(server_ip):
+    #     try:
+    #         payload = {
+    #             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+    #             'iat': datetime.datetime.utcnow(),
+    #             'sub': server_ip
+    #         }
+    #         return jwt.encode(
+    #             payload,
+    #             app.config.get('SECRET_KEY'),
+    #             algorithm='HS256'
+    #         )
+    #     except Exception as e:
+    #         return e
 
 
 class SpigotPlugin(Plugin):

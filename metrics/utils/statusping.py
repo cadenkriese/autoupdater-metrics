@@ -1,6 +1,8 @@
+# metrics/utils/statusping.py
+"""Used for pinging status from Minecraft servers."""
+import json
 import socket
 import struct
-import json
 import time
 
 
@@ -39,25 +41,15 @@ def _pack_varint(data):
 
 def _pack_data(data):
     """ Page the data """
-    if type(data) is str:
+    if isinstance(data, str):
         data = data.encode('utf8')
         return _pack_varint(len(data)) + data
-    elif type(data) is int:
+    elif isinstance(data, int):
         return struct.pack('H', data)
-    elif type(data) is float:
+    elif isinstance(data, float):
         return struct.pack('Q', int(data))
     else:
         return data
-
-
-def _send_data(connection, *args):
-    """ Send the data on the connection """
-    data = b''
-
-    for arg in args:
-        data += _pack_data(arg)
-
-    connection.send(_pack_varint(len(data)) + data)
 
 
 def _read_fully(connection, extra_varint=False):
@@ -91,6 +83,15 @@ class StatusPing:
         self._port = port
         self._timeout = timeout
 
+    def send_data(self, connection, *args):
+        """ Send the data on the connection """
+        data = b''
+
+        for arg in args:
+            data += _pack_data(arg)
+
+        connection.send(_pack_varint(len(data)) + data)
+
     def get_status(self):
         """ Get the status response """
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as connection:
@@ -98,14 +99,14 @@ class StatusPing:
             connection.connect((self._host, self._port))
 
             # Send handshake + status request
-            _send_data(connection, b'\x00\x00', self._host, self._port, b'\x01')
-            _send_data(connection, b'\x00')
+            self.send_data(connection, b'\x00\x00', self._host, self._port, b'\x01')
+            self.send_data(connection, b'\x00')
 
             # Read response, offset for string length
             data = _read_fully(connection, extra_varint=True)
 
             # Send and read unix time
-            _send_data(connection, b'\x01', time.time() * 1000)
+            self.send_data(connection, b'\x01', time.time() * 1000)
             unix = _read_fully(connection)
 
         # Load json and return

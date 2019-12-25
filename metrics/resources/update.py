@@ -1,10 +1,11 @@
+# metrics/resources/update.py
 import uuid
 from datetime import datetime
 
 from flask import Response, request
+from flask_restful import Resource
 
 from metrics.database.models import Plugin, SpigotPlugin, PluginUpdate, PluginUpdateVersion
-from flask_restful import Resource
 
 
 class PluginsAPI(Resource):
@@ -56,7 +57,7 @@ class UpdatesAPI(Resource):
 
 
 class TestAPI(Resource):
-    def post(self,):
+    def post(self, ):
         SpigotPlugin(name="Thirst",
                      spigot_name="Thirst",
                      category="Mechanics",
