@@ -1,15 +1,39 @@
 # metrics/database/models.py
+"""Database models."""
 import datetime
+from _socket import gaierror, timeout
 
 from .db import db
+from ..utils.statusping import StatusPing
+
+
+class MinecraftServer(db.Document):
+    """Stores information about specific minecraft servers."""
+    id = db.UUIDField(required=True, primary_key=True)
+    ip = db.StringField()
+    motd = db.StringField()
+
+    def validate_server(self):
+        """Validates that the server is a valid minecraft server."""
+        if self.ip is not None:
+            try:
+                status = StatusPing(host=self.ip).get_status()
+                self.motd = str(status['description'])
+                return True
+            except (gaierror, timeout):
+                return False
+        else:
+            return False
 
 
 class PluginUpdateVersion(db.EmbeddedDocument):
+    """An embedded document for plugin update versions."""
     old = db.StringField(required=True)
     new = db.StringField(required=True)
 
 
 class PluginUpdate(db.EmbeddedDocument):
+    """An embedded document for updates of plugins."""
     server_id = db.UUIDField(required=True)
     timestamp = db.DateTimeField(default=datetime.datetime.utcnow)
     size = db.IntField(required=True)
@@ -18,30 +42,16 @@ class PluginUpdate(db.EmbeddedDocument):
 
 
 class Plugin(db.Document):
+    """Base document for plugins."""
     name = db.StringField(required=True, primary_key=True)
     description = db.StringField()
     download_url = db.URLField()
     updates = db.EmbeddedDocumentListField(PluginUpdate)
     meta = {'allow_inheritance': True}
 
-    # @staticmethod
-    # def encode_auth_token(server_ip):
-    #     try:
-    #         payload = {
-    #             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
-    #             'iat': datetime.datetime.utcnow(),
-    #             'sub': server_ip
-    #         }
-    #         return jwt.encode(
-    #             payload,
-    #             app.config.get('SECRET_KEY'),
-    #             algorithm='HS256'
-    #         )
-    #     except Exception as e:
-    #         return e
-
 
 class SpigotPlugin(Plugin):
+    """An extended document specifically for Spigot plugins."""
     spigot_name = db.StringField(required=True)
     resource_id = db.IntField(required=True)
     category = db.StringField(required=True)

@@ -83,7 +83,8 @@ class StatusPing:
         self._port = port
         self._timeout = timeout
 
-    def send_data(self, connection, *args):
+    @staticmethod
+    def send_data(connection, *args):
         """ Send the data on the connection """
         data = b''
 

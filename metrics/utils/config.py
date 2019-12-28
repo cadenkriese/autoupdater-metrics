@@ -10,10 +10,10 @@ MONGO_BASEURL = 'mongodb://localhost/'
 class BaseConfig:
     """Base configuration."""
     DEBUG = False
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    SECRET_KEY = os.getenv('JWT_SECRET_KEY')
     if SECRET_KEY is None:
-        os.environ['SECRET_KEY'] = str(os.urandom(24))
-        SECRET_KEY = os.getenv('SECRET_KEY')
+        os.environ['JWT_SECRET_KEY'] = str(os.urandom(24))
+        SECRET_KEY = os.getenv('JWT_SECRET_KEY')
     MONGODB_HOST = MONGO_BASEURL + DB_NAME
 
 
