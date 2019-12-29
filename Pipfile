@@ -4,6 +4,8 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pytest-flask = "*"
+pylint = "*"
 
 [packages]
 flask = "*"
@@ -11,8 +13,7 @@ dynaconf = "*"
 flask-mongoengine = "*"
 flask-restful = "*"
 flask-jwt-extended = "*"
-pytest-flask = "*"
-pylint = "*"
+uwsgi = "*"
 
 [requires]
 python_version = "3.7"

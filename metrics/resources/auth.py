@@ -15,7 +15,7 @@ class AuthAPI(Resource):
     """API for authenticating with JWT."""
 
     @staticmethod
-    def post():
+    def get():
         """Register a minecraft server in exchange for a JWT token."""
         ip = request.remote_addr
         try:
