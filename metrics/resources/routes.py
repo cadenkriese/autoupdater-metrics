@@ -10,4 +10,4 @@ def initialize_routes(api):
     api.add_resource(PluginAPI, "/plugins/<plugin_name>")
     api.add_resource(UpdatesAPI, "/plugins/<plugin_name>/updates")
 
-    api.add_resource(AuthAPI, "/auth")
+    api.add_resource(AuthAPI, "/plugins/auth")

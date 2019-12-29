@@ -3,8 +3,8 @@
 import datetime
 from _socket import gaierror, timeout
 
+from metrics.resources.minecraft_status_checker import StatusPing
 from .db import db
-from ..utils.statusping import StatusPing
 
 
 class MinecraftServer(db.Document):
@@ -20,7 +20,7 @@ class MinecraftServer(db.Document):
                 status = StatusPing(host=self.ip).get_status()
                 self.motd = str(status['description'])
                 return True
-            except (gaierror, timeout):
+            except (gaierror, timeout, ConnectionRefusedError):
                 return False
         else:
             return False

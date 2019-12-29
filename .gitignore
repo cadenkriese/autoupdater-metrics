@@ -123,7 +123,6 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-.Python
 build/
 develop-eggs/
 dist/
@@ -219,7 +218,6 @@ celerybeat.pid
 
 # Environments
 .env
-.venv
 env/
 venv/
 ENV/
@@ -253,3 +251,4 @@ dmypy.json
 .idea/modules.xml
 .idea/vcs.xml
 .idea/icon*.png
+.secrets.*

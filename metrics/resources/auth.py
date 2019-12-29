@@ -13,20 +13,18 @@ from metrics.database.models import MinecraftServer
 
 class AuthAPI(Resource):
     """API for authenticating with JWT."""
+
     @staticmethod
     def post():
         """Register a minecraft server in exchange for a JWT token."""
-        body = request.get_json()
-        if body.get('ip') is not None:
-            try:
-                server = MinecraftServer.objects.get(ip=body.get('ip'))
-            except DoesNotExist:
-                server = MinecraftServer(**body)
-                if not server.validate_server():
-                    return {'error': 'Invalid Minecraft server.'}, 500
-                server.id = uuid.uuid4()
-        else:
-            return {'error': 'No ip field provided.'}, 500
+        ip = request.remote_addr
+        try:
+            server = MinecraftServer.objects.get(ip=ip)
+        except DoesNotExist:
+            server = MinecraftServer(ip=ip)
+            if not server.validate_server():
+                return {'error': 'Invalid Minecraft server.'}, 500
+            server.id = uuid.uuid4()
 
         server.save()
         expires = datetime.timedelta(days=7)

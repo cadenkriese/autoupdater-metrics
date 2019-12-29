@@ -1,4 +1,4 @@
-# metrics/utils/statusping.py
+# metrics/utils/minecraft_status_checker.py
 """Used for pinging status from Minecraft servers."""
 import json
 import socket

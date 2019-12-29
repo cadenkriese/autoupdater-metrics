@@ -11,6 +11,7 @@ from metrics.database.models import Plugin, SpigotPlugin, PluginUpdate
 
 class PluginsAPI(Resource):
     """API for groups of plugins"""
+
     @staticmethod
     def get():
         """
@@ -20,7 +21,7 @@ class PluginsAPI(Resource):
         updates = Plugin.objects.filter().to_json()
         return Response(updates, mimetype="application/json", status=200)
 
-    @jwt_required
+    # @jwt_required
     def post(self):
         """
         Add a plugin to the database.
@@ -40,6 +41,7 @@ class PluginsAPI(Resource):
 
 class PluginAPI(Resource):
     """API for individual plugins, specified in the request."""
+
     # FORMAT FOR DATES IS Y-m-D H:M:S
     @jwt_required
     def put(self, plugin_name):
@@ -76,6 +78,7 @@ class PluginAPI(Resource):
 
 class UpdatesAPI(Resource):
     """API for adding and getting specific plugins from the database."""
+
     @staticmethod
     def get(plugin_name):
         """
