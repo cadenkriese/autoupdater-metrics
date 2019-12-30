@@ -4,14 +4,14 @@ import datetime
 from _socket import gaierror, timeout
 
 from metrics.resources.minecraft_status_checker import StatusPing
-from .db import db
+from .db import DB
 
 
-class MinecraftServer(db.Document):
+class MinecraftServer(DB.Document):
     """Stores information about specific minecraft servers."""
-    id = db.UUIDField(required=True, primary_key=True)
-    ip = db.StringField()
-    motd = db.StringField()
+    id = DB.UUIDField(required=True, primary_key=True)
+    ip = DB.StringField()
+    motd = DB.StringField()
 
     def validate_server(self):
         """Validates that the server is a valid minecraft server."""
@@ -26,38 +26,38 @@ class MinecraftServer(db.Document):
             return False
 
 
-class PluginUpdateVersion(db.EmbeddedDocument):
+class PluginUpdateVersion(DB.EmbeddedDocument):
     """An embedded document for plugin update versions."""
-    old = db.StringField(required=True)
-    new = db.StringField(required=True)
+    old = DB.StringField(required=True)
+    new = DB.StringField(required=True)
 
 
-class PluginUpdate(db.EmbeddedDocument):
+class PluginUpdate(DB.EmbeddedDocument):
     """An embedded document for updates of plugins."""
-    server_id = db.UUIDField(required=True)
-    timestamp = db.DateTimeField(default=datetime.datetime.utcnow)
-    size = db.IntField(required=True)
-    update_duration = db.DecimalField(required=True)
-    version = db.EmbeddedDocumentField(PluginUpdateVersion, required=True)
+    server_id = DB.UUIDField(required=True)
+    timestamp = DB.DateTimeField(default=datetime.datetime.utcnow)
+    size = DB.IntField(required=True)
+    update_duration = DB.DecimalField(required=True)
+    version = DB.EmbeddedDocumentField(PluginUpdateVersion, required=True)
 
 
-class Plugin(db.Document):
+class Plugin(DB.Document):
     """Base document for plugins."""
-    name = db.StringField(required=True, primary_key=True)
-    description = db.StringField()
-    download_url = db.URLField()
-    updates = db.EmbeddedDocumentListField(PluginUpdate)
+    name = DB.StringField(required=True, primary_key=True)
+    description = DB.StringField()
+    download_url = DB.URLField()
+    updates = DB.EmbeddedDocumentListField(PluginUpdate)
     meta = {'allow_inheritance': True}
 
 
 class SpigotPlugin(Plugin):
     """An extended document specifically for Spigot plugins."""
-    spigot_name = db.StringField(required=True)
-    resource_id = db.IntField(required=True)
-    category = db.StringField(required=True)
-    average_rating = db.DecimalField(required=True)
-    upload_date = db.DateTimeField(required=True)
-    supported_versions = db.ListField(db.StringField(), required=True)
-    premium = db.BooleanField(required=True)
-    price = db.DecimalField()
-    currency = db.StringField()
+    spigot_name = DB.StringField(required=True)
+    resource_id = DB.IntField(required=True)
+    category = DB.StringField(required=True)
+    average_rating = DB.DecimalField(required=True)
+    upload_date = DB.DateTimeField(required=True)
+    supported_versions = DB.ListField(DB.StringField(), required=True)
+    premium = DB.BooleanField(required=True)
+    price = DB.DecimalField()
+    currency = DB.StringField()
