@@ -77,7 +77,7 @@ def _read_fully(connection, extra_varint=False):
 class StatusPing:
     """ Get the ping status for the Minecraft server """
 
-    def __init__(self, host='localhost', port=25565, timeout=5):
+    def __init__(self, host='localhost', port=25565, timeout=2):
         """ Init the hostname and the port """
         self._host = host
         self._port = port

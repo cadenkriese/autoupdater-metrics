@@ -21,7 +21,7 @@ class PluginsAPI(Resource):
         updates = Plugin.objects.filter().to_json()
         return Response(updates, mimetype="application/json", status=200)
 
-    # @jwt_required
+    @jwt_required
     def post(self):
         """
         Add a plugin to the database.

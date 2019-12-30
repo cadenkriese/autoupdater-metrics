@@ -17,11 +17,11 @@ class AuthAPI(Resource):
     @staticmethod
     def get():
         """Register a minecraft server in exchange for a JWT token."""
-        ip = request.remote_addr
+        address = request.remote_addr
         try:
-            server = MinecraftServer.objects.get(ip=ip)
+            server = MinecraftServer.objects.get(ip=address)
         except DoesNotExist:
-            server = MinecraftServer(ip=ip)
+            server = MinecraftServer(ip=address)
             if not server.validate_server():
                 return {'error': 'Invalid Minecraft server.'}, 500
             server.id = uuid.uuid4()
