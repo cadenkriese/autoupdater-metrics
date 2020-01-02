@@ -28,12 +28,16 @@ class PluginsAPI(Resource):
         :return: The id of the plugin in the database.
         """
         body = request.get_json()
+        print(body)
         args = request.args
 
         if "spigot" in args['type']:
             plugin = SpigotPlugin(**body)
         else:
             plugin = Plugin(**body)
+
+        for update in plugin.updates:
+            update.server_id = get_jwt_identity()
 
         plugin.save()
         return {'id': str(plugin.id)}, 200

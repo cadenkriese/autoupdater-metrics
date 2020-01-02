@@ -1,6 +1,7 @@
 # metrics/resources/auth.py
 """Handled JWT authentication for the API."""
 import datetime
+import threading
 import uuid
 
 from flask import request
@@ -20,6 +21,9 @@ class AuthAPI(Resource):
         address = request.remote_addr
         try:
             server = MinecraftServer.objects.get(ip=address)
+            # If they were a valid server they get one more token, but their DB doc is removed so
+            # subsequent invalid requests fail.
+            threading.Thread(target=server.update_server, name='update-server-info').start()
         except DoesNotExist:
             server = MinecraftServer(ip=address)
             if not server.validate_server():

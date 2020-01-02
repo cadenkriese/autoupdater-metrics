@@ -25,6 +25,15 @@ class MinecraftServer(DB.Document):
         else:
             return False
 
+    def update_server(self):
+        """Updates information about the minecraft server, without inhibiting response time (if run async)."""
+        try:
+            status = StatusPing(host=self.ip).get_status()
+            self.motd = str(status['description'])
+            self.save()
+        except (gaierror, timeout, ConnectionRefusedError):
+            self.delete()
+
 
 class PluginUpdateVersion(DB.EmbeddedDocument):
     """An embedded document for plugin update versions."""
