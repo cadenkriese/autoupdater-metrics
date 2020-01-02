@@ -28,7 +28,6 @@ class PluginsAPI(Resource):
         :return: The id of the plugin in the database.
         """
         body = request.get_json()
-        print(body)
         args = request.args
 
         if "spigot" in args['type']:
