@@ -2,11 +2,18 @@
 """Holds the API's for plugins and plugin updates."""
 import json
 
+from metrics import JWT
 from flask import Response, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
 from metrics.database.models import Plugin, SpigotPlugin, PluginUpdate
+
+
+@JWT.expired_token_loader
+def token_expired(expired_token):
+    token_type = expired_token['type']
+    return {'msg': 'The {} token has expired'.format(token_type)}, 401
 
 
 class PluginsAPI(Resource):
@@ -18,7 +25,7 @@ class PluginsAPI(Resource):
         Gets the plugins in the database.
         :return: The list of plugins from the database, and all their info.
         """
-        updates = Plugin.objects.filter().to_json()
+        updates = Plugin.objects.only('description', 'download_url').filter().to_json()
         return Response(updates, mimetype="application/json", status=200)
 
     @jwt_required
