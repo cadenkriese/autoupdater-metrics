@@ -2,23 +2,11 @@
 """Holds the API's for plugins and plugin updates."""
 import json
 
-from metrics import JWT
 from flask import Response, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
 from metrics.database.models import Plugin, SpigotPlugin, PluginUpdate
-
-
-@JWT.expired_token_loader
-def token_expired(expired_token):
-    """
-    Informs the user that their token has expired.
-    :param expired_token: The expired, but otherwise valid, token.
-    :return: A 401 message that their token expired.
-    """
-    token_type = expired_token['type']
-    return {'msg': 'The {} token has expired'.format(token_type)}, 401
 
 
 class PluginsAPI(Resource):
@@ -66,9 +54,12 @@ class PluginAPI(Resource):
         :return: The plugin information from the db.
         """
         body = request.get_json()
-        Plugin.objects.filter(name=plugin_name).update(**body)
+        updated_doc_count = Plugin.objects.filter(name=plugin_name).update(**body)
 
-        return '', 200
+        if updated_doc_count > 0:
+            return '', 200
+        else:
+            return {'msg': 'No documents found under that name.'}, 404
 
     @jwt_required
     def delete(self, plugin_name):
@@ -77,8 +68,12 @@ class PluginAPI(Resource):
         :param plugin_name: The plugin to delete.
         :return: A http response code.
         """
-        Plugin.objects.filter(name=plugin_name).delete()
-        return '', 200
+        deleted_doc_count = Plugin.objects.filter(name=plugin_name).delete()
+
+        if deleted_doc_count > 0:
+            return '', 200
+        else:
+            return {'msg': 'No documents found under that name.'}, 404
 
     @staticmethod
     def get(plugin_name):
