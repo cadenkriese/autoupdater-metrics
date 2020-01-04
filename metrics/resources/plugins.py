@@ -30,7 +30,7 @@ class PluginsAPI(Resource):
         body = request.get_json()
         args = request.args
 
-        if "spigot" in args['type']:
+        if "spigot" in args['type'] or body['spigot_name'] is not None:
             plugin = SpigotPlugin(**body)
         else:
             plugin = Plugin(**body)
