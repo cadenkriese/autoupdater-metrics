@@ -37,7 +37,7 @@ class MinecraftServer(DB.Document):
 
 class PluginUpdateVersion(DB.EmbeddedDocument):
     """An embedded document for plugin update versions."""
-    old = DB.StringField(required=True)
+    old = DB.StringField()
     new = DB.StringField(required=True)
 
 
