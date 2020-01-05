@@ -27,7 +27,7 @@ class AuthAPI(Resource):
         except DoesNotExist:
             server = MinecraftServer(ip=address)
             if not server.validate_server():
-                return {'error': 'Invalid Minecraft server.'}, 500
+                return {'error': 'Invalid Minecraft server.'}, 401
             server.id = uuid.uuid4()
 
         server.save()

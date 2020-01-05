@@ -125,10 +125,10 @@
         },
         "mongoengine": {
             "hashes": [
-                "sha256:9e993c47b0964dd82361b552310ee94b3f55b9aadb78df6e2735b7446dda58ac",
-                "sha256:fef88d3ab701a100276be458d26500f0f6a483f6b624e8065a85b095680a1db3"
+                "sha256:65f6cc48cbaac5ecd518dcec725d9c312286796510a9d93a4388a53811a294b9",
+                "sha256:6796df3f7458fb1643812c0b58ccad201da0af935ddd4159604c5ca769b9abb6"
             ],
-            "version": "==0.19.0"
+            "version": "==0.19.1"
         },
         "pyjwt": {
             "hashes": [
@@ -470,7 +470,8 @@
         },
         "wcwidth": {
             "hashes": [
-                "sha256:8fd29383f539be45b20bd4df0dc29c20ba48654a41e661925e612311e9f3c603"
+                "sha256:8fd29383f539be45b20bd4df0dc29c20ba48654a41e661925e612311e9f3c603",
+                "sha256:f28b3e8a6483e5d49e7f8949ac1a78314e740333ae305b4ba5defd3e74fb37a8"
             ],
             "version": "==0.1.8"
         },
