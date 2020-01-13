@@ -1,6 +1,7 @@
 # metrics/database/models.py
 """Database models."""
 import datetime
+import uuid
 from _socket import gaierror, timeout
 
 from metrics.resources.minecraft_status_checker import StatusPing
@@ -52,7 +53,8 @@ class PluginUpdate(DB.EmbeddedDocument):
 
 class Plugin(DB.Document):
     """Base document for plugins."""
-    name = DB.StringField(required=True, primary_key=True)
+    id = DB.UUIDField(required=True, primary_key=True, default=uuid.uuid4())
+    name = DB.StringField(required=True)
     description = DB.StringField()
     download_url = DB.URLField()
     updates = DB.EmbeddedDocumentListField(PluginUpdate)
