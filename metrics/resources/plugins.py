@@ -1,11 +1,10 @@
 # metrics/resources/plugins.py
 """Holds the API's for plugins and plugin updates."""
 import datetime
-import json
 from collections import Iterable
 from uuid import UUID
 
-from flask import Response, request
+from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
@@ -55,30 +54,28 @@ class PluginsAPI(Resource):
 
         :return: The list of plugins from the database, and all their info.
         """
-        body = request.get_json()
         args = request.args
 
         limit = 20
 
         if 'limit' in args:
-            limit = args['limit']
+            limit = int(args['limit'])
             if limit > 300:
                 limit = 300
 
-        if body is not None:
-            if 'spigot_name' in body.keys() or ('type' in args and 'spigot' in args['type']):
-                plugins = SpigotPlugin.objects(**body).only('id', 'name').limit(limit)
-            else:
-                plugins = Plugin.objects(**body).only('id', 'name').limit(limit)
+        plugin_query = {k: v for (k, v) in args.items() if k != 'limit' and k != 'type'}
+
+        if 'type' in args and 'spigot' in args['type']:
+            plugins = SpigotPlugin.objects(**plugin_query).only('id', 'name').limit(limit)
         else:
-            plugins = Plugin.objects.only('id', 'name').limit(limit)
+            plugins = Plugin.objects(**plugin_query).only('id', 'name').limit(limit)
 
         if len(plugins) == 0:
             return {'error': 'Query returned no response.'}, 404
 
-        plugins = [pl.to_mongo() for pl in plugins]
+        plugins = _cleanup([pl.to_mongo() for pl in plugins])
 
-        return Response(json.dumps(_cleanup(plugins)), mimetype="application/json", status=200)
+        return plugins, 200
 
     @jwt_required
     def post(self):
@@ -89,7 +86,7 @@ class PluginsAPI(Resource):
         body = request.get_json()
         args = request.args
 
-        if "spigot" in args['type'] or body['spigot_name'] is not None:
+        if ('type' in args and 'spigot' in args['type']) or 'spigot_name' in body:
             plugin = SpigotPlugin(**body)
         else:
             plugin = Plugin(**body)
@@ -113,7 +110,10 @@ class PluginAPI(Resource):
         :return: The plugin information from the db.
         """
         body = request.get_json()
-        updated_doc_count = Plugin.objects.filter(id=plugin_id).update(**body)
+        try:
+            updated_doc_count = Plugin.objects.filter(id=plugin_id).update(**body)
+        except ValueError:
+            updated_doc_count = 0
 
         if updated_doc_count > 0:
             return '', 200
@@ -142,7 +142,7 @@ class PluginAPI(Resource):
         :return: The plugin information from the db.
         """
         update = _cleanup(Plugin.objects(id=plugin_id).first_or_404().to_mongo())
-        return Response(json.dumps(update), mimetype="application/json", status=200)
+        return update, 200
 
 
 class UpdatesAPI(Resource):
@@ -156,8 +156,7 @@ class UpdatesAPI(Resource):
         :return: The updates of the given plugin.
         """
         updates = Plugin.objects.only('updates').get_or_404(id=plugin_id)
-        updates_json = json.dumps(_cleanup(updates.to_mongo()['updates']))
-        return Response(updates_json, mimetype="application/json", status=200)
+        return _cleanup(updates.to_mongo()['updates']), 200
 
     @jwt_required
     def post(self, plugin_id):
