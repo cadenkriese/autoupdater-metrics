@@ -1,6 +1,7 @@
 # metrics/resources/plugins.py
 """Holds the API's for plugins and plugin updates."""
 import datetime
+import uuid
 from collections import Iterable
 from uuid import UUID
 
@@ -94,6 +95,8 @@ class PluginsAPI(Resource):
             plugin = SpigotPlugin(**body)
         else:
             plugin = Plugin(**body)
+
+        plugin.id = uuid.uuid4()
 
         for update in plugin.updates:
             update.server_id = get_jwt_identity()
