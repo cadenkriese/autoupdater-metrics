@@ -22,13 +22,13 @@ def _cleanup(obj):
     if isinstance(obj, dict):
         plugin_dict = {}
         for (key, val) in obj.items():
+            val = _cleanup(val)
+            if val is None:
+                continue
             if key == "_cls":
                 key = "type"
             if key.startswith('_'):
                 key = key[1:]
-            val = _cleanup(val)
-            if val is None:
-                continue
             plugin_dict[key] = val
         return plugin_dict
     elif isinstance(obj, list):
@@ -64,6 +64,10 @@ class PluginsAPI(Resource):
                 limit = 300
 
         plugin_query = {k: v for (k, v) in args.items() if k != 'limit' and k != 'type'}
+
+        # Map values to be proper booleans.
+        plugin_query.update({k: (v.lower() == 'true') for (k, v) in plugin_query.items()
+                             if v.lower() == 'true' or v.lower() == 'false'})
 
         if 'type' in args and 'spigot' in args['type']:
             plugins = SpigotPlugin.objects(**plugin_query).only('id', 'name').limit(limit)
