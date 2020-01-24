@@ -45,6 +45,8 @@ class PluginUpdate(DB.EmbeddedDocument):
     """An embedded document for updates of plugins."""
     server_id = DB.UUIDField(required=True)
     timestamp = DB.DateTimeField(default=datetime.datetime.utcnow)
+    cached = DB.BooleanField()
+    replaced_old = DB.BooleanField()
     size = DB.IntField(required=True)
     update_duration = DB.DecimalField(required=True)
     version = DB.EmbeddedDocumentField(PluginUpdateVersion, required=True)

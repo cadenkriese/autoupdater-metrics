@@ -99,7 +99,15 @@ class PluginsAPI(Resource):
         plugin.id = uuid.uuid4()
 
         for update in plugin.updates:
-            update.server_id = get_jwt_identity()
+            if update.server_id is None or len(update.server_id) == 0:
+                update.server_id = get_jwt_identity()
+
+        duplicates = Plugin.objects(name=plugin.name,
+                                    description=plugin.description,
+                                    download_url=plugin.download_url)
+
+        if len(duplicates) > 0:
+            return {'msg': 'Document already exists.'}, 400
 
         plugin.save()
         return {'id': str(plugin.id)}, 200
